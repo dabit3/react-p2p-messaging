@@ -8,4 +8,4 @@ const server = app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-Gun({ web: server, file: 'db/data' });
+Gun({ web: server });

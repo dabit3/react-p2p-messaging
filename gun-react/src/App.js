@@ -1,7 +1,5 @@
 import { useEffect, useState, useReducer } from 'react'
-import logo from './logo.svg';
-import './App.css';
-import Gun from 'gun/gun'
+import Gun from 'gun'
 
 const gun = Gun({
   peers: [
@@ -19,15 +17,17 @@ function reducer(state, message) {
   }
 }
 
-function App() {
-  const [message, setMessage] = useState('')
+export default function App() {
+  const [formState, setForm] = useState({
+    name: '', message: ''
+  })
   const [state, dispatch] = useReducer(reducer, initialState)
   useEffect(() => {
     const messages = gun.get('messages')
-    console.log('messages: ', messages)
-    messages.map().on(function (m) {
+    messages.map().on(m => {
       dispatch({
         message: m.message,
+        name: m.name,
         createdAt: m.createdAt
       })
     })
@@ -35,31 +35,43 @@ function App() {
   
   function saveMessage() {
     const messages = gun.get('messages')
-    messages.set({ message, createdAt: Date.now() })
-    setMessage('')
+    messages.set({
+      name: formState.name,
+      message: formState.message,
+      createdAt: Date.now()
+    })
+    setForm({
+      name: '', message: ''
+    })
   } 
   function onChange(e) {
-    setMessage(e.target.value)
+    setForm({ ...formState, [e.target.name]: e.target.value  })
   }
-  console.log('messages:', state.messages)
+  console.log('formState: ', formState)
   return (
     <div style={{ padding: 30 }}>
         <input
           onChange={onChange}
-          placeholder="Message"
-          value={message}
+          placeholder="Name"
+          name="name"
+          value={formState.name}
         />
-        <button onClick={saveMessage}>Save Message</button>
+        <input
+          onChange={onChange}
+          placeholder="Message"
+          name="message"
+          value={formState.message}
+        />
+        <button onClick={saveMessage}>Send Message</button>
         {
           state.messages.map(message => (
-            <>
+            <div key={message.createdAt}>
               <h2>{message.message}</h2>
+              <h3>{message.name}</h3>
               <p>{message.createdAt}</p>
-            </>
+            </div>
           ))
         }
     </div>
   );
 }
-
-export default App;
