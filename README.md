@@ -1,5 +1,7 @@
 ## P2P chat app with React & Gun.js
 
+![](header.jpg)
+
 To launch this app, follow these steps:
 
 1. Clone the repo and change into the directory:
